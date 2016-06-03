@@ -4,6 +4,10 @@ apply plugin: "eclipse"
 
 version = "0.1"
 
+dependencies {
+    compile "com.google.guava:guava:19.0"
+}
+
 jar {
     manifest {
         attributes 'PCR1000-Backend': 'The PCR1000 Backend',
