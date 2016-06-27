@@ -1,15 +1,17 @@
-package se.lunderhage.pcr1000.backend.commands;
+package se.lunderhage.pcr1000.backend.tasks;
+
+import java.io.OutputStream;
+
+import com.google.common.eventbus.EventBus;
 
 import se.lunderhage.pcr1000.backend.types.RadioChannel;
 
 /**
  * Command to tune a RadioChannel on the PCR1000.
  */
-public class Tune implements Command  {
+public class Tune extends Command  {
 	
-	private static final String TUNE_CMD = "K0%010d%s%s00";
-	
-	// return "K0" + str(self.frequency).zfill(10) + self.mode + self.filter + "00"
+	private static final String TUNE_CMD = "K0%010d%s%s00\n";
 	
 	private final RadioChannel channel;
 
@@ -22,7 +24,11 @@ public class Tune implements Command  {
 	}
 	
 	@Override
-	public String encode() {
+	public byte[] encode() {
+		return getCommand().getBytes();
+	}
+	
+	public String getCommand() {
 		return String.format(
 				TUNE_CMD,
 				channel.getFrequency().getFrequency(),
@@ -53,6 +59,12 @@ public class Tune implements Command  {
 		} else if (!channel.equals(other.channel))
 			return false;
 		return true;
+	}
+
+	@Override
+	public void execute(OutputStream serialOutput, EventBus events) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

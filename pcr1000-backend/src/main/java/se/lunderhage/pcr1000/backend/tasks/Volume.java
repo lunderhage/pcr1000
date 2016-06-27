@@ -1,18 +1,21 @@
-package se.lunderhage.pcr1000.backend.commands;
+package se.lunderhage.pcr1000.backend.tasks;
+
+import java.io.OutputStream;
 
 import com.google.common.base.Preconditions;
+import com.google.common.eventbus.EventBus;
 
 /**
  * Command to set the volume on the PCR1000.
  */
-public class Volume implements Command {
+public class Volume extends Command {
 	
-	private static final String VOLUME_CMD = "J40%s";
+	private static final String VOLUME_CMD = "J40%s\n";
 	
 	private final int volume;
 
 	public Volume(int volume) {
-		Preconditions.checkArgument(volume >= 50000 && volume <= 1300000000, "Frequency must be between 50000 and 1300000000 Hz");
+		Preconditions.checkArgument(volume >= 0 && volume <= 255, "Volume musst be between 0 and 255");
 		this.volume = volume;
 	}
 
@@ -21,8 +24,8 @@ public class Volume implements Command {
 	}
 	
 	@Override
-	public String encode() {
-		return String.format(VOLUME_CMD, Integer.toHexString(volume).toUpperCase());
+	public byte[] encode() {
+		return getCommand().getBytes();
 	}
 
 	@Override
@@ -46,6 +49,15 @@ public class Volume implements Command {
 			return false;
 		return true;
 	}
+
+	@Override
+	public void execute(OutputStream serialOutput, EventBus events) {
+		// TODO Auto-generated method stub
+		
+	}
 	
+	public String getCommand() {
+		return String.format(VOLUME_CMD, Integer.toHexString(volume).toUpperCase());
+	}
 	
 }

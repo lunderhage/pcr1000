@@ -17,6 +17,10 @@ public class RadioChannel {
 		this.frequency = frequency;
 	}
 	
+	public RadioChannel(Mode mode, Filter filter, int frequency) {
+		this(mode, filter, new Frequency(frequency));
+	}
+	
 	public Mode getMode() {
 		return mode;
 	}
