@@ -1,17 +1,19 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
-import java.io.OutputStream;
+import java.io.IOException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
+
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 
 /**
  * Command to set the volume on the PCR1000.
  */
 public class Volume extends Command {
-	
+
 	private static final String VOLUME_CMD = "J40%s\n";
-	
+
 	private final int volume;
 
 	public Volume(int volume) {
@@ -22,7 +24,7 @@ public class Volume extends Command {
 	public int getVolume() {
 		return volume;
 	}
-	
+
 	@Override
 	public byte[] encode() {
 		return getCommand().getBytes();
@@ -51,13 +53,17 @@ public class Volume extends Command {
 	}
 
 	@Override
-	public void execute(OutputStream serialOutput, EventBus events) {
-		// TODO Auto-generated method stub
-		
+	public void execute(CommandHandler commandOutput, EventBus events) {
+		try {
+			commandOutput.execCommand(getCommand());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	public String getCommand() {
 		return String.format(VOLUME_CMD, Integer.toHexString(volume).toUpperCase());
 	}
-	
+
 }

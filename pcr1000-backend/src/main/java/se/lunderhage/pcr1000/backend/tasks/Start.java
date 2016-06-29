@@ -1,19 +1,18 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.TimeoutException;
 
 import com.google.common.eventbus.EventBus;
 
-import se.lunderhage.pcr1000.backend.daemon.CommandException;
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
+
 
 /**
  * Task to start the PCR1000.
  */
 public class Start extends Command  {
 	
-	private static final String CMD = "H101\n";
+	private static final String CMD = "H101";
 
 	@Override
 	public byte[] encode() {
@@ -21,7 +20,21 @@ public class Start extends Command  {
 	}
 
 	@Override
-	public void execute(OutputStream serialOutput, EventBus events) {
+	public void execute(CommandHandler commandOutput, EventBus events) {
+		
+		try {
+			commandOutput.execCommand(CMD);
+			commandOutput.execCommand(CMD);
+			commandOutput.execCommand(CMD);
+			commandOutput.execCommand(CMD);
+			
+			if (!commandOutput.lastCommandSuccessful()) {
+				throw new RuntimeException("Failed to turn on radio.");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		// Register for H100 and H101 events.
 		

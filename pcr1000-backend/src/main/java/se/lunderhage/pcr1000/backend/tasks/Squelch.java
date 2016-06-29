@@ -1,17 +1,19 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
-import java.io.OutputStream;
+import java.io.IOException;
 
 import com.google.common.base.Preconditions;
 import com.google.common.eventbus.EventBus;
+
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 
 /**
  * Command to set the squelch on the PCR1000.
  */
 public class Squelch extends Command {
-	
+
 	private static final String SQUELCH_CMD = "J41%s\n";
-	
+
 	private final int squelch;
 
 	public Squelch(int squelch) {
@@ -22,7 +24,7 @@ public class Squelch extends Command {
 	public int getSquelch() {
 		return squelch;
 	}
-	
+
 	@Override
 	public byte[] encode() {
 		return getCommand().getBytes();
@@ -51,13 +53,17 @@ public class Squelch extends Command {
 	}
 
 	@Override
-	public void execute(OutputStream serialOutput, EventBus events) {
-		// TODO Auto-generated method stub
-		
+	public void execute(CommandHandler commandOutput, EventBus events) {
+		try {
+			commandOutput.execCommand(getCommand());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	public String getCommand() {
 		return String.format(SQUELCH_CMD, Integer.toHexString(squelch).toUpperCase());
 	}
-	
+
 }

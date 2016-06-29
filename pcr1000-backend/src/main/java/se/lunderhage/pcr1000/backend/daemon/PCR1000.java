@@ -66,11 +66,11 @@ public class PCR1000 {
 		
 		pcr1000.register(new PrintSubscriber());
 		
-		pcr1000.submitCommand(new Volume(100));
+		pcr1000.submitCommand(new Volume(80));
 		pcr1000.submitCommand(new Squelch(147));
-		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.WFM, Filter._230K, 107100000)));
+//		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.WFM, Filter._230K, 107100000)));
 //		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   122450000)));
-//		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   118100000)));
+		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   118100000)));
 //		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   126650000)));
 		
 		LOG.debug("Listening to radio... (press enter to quit)");
@@ -80,31 +80,6 @@ public class PCR1000 {
 		LOG.debug("Shutting down...");
 		pcr1000.stop();
 		
-//		for(String s:NRSerialPort.getAvailableSerialPorts()){
-//	        System.out.println("Availible port: "+s);
-//	    }
-//		
-//		NRSerialPort serialPort = new NRSerialPort("/dev/ttyUSB0", 9600);
-//		serialPort.connect();
-//		serialPort.getSerialPortInstance().setRTS(true);
-//		serialPort.getSerialPortInstance().setFlowControlMode(SerialPort.FLOWCONTROL_RTSCTS_IN
-//                | SerialPort.FLOWCONTROL_RTSCTS_OUT);
-//		InputStream input = serialPort.getInputStream();
-//		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-//		while (!Thread.currentThread().isInterrupted()) {
-//			try {
-//				if (reader.ready()) {
-//					System.out.println("Read data: " + reader.readLine());
-//				}
-//				//				byte[] buffer = new byte[100];
-//				//				int bytes = input.read(buffer);
-//				//				System.out.println("Read data (" + bytes + "): "+ new String(buffer));
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-//		serialPort.disconnect();
 	}
 
 }

@@ -1,9 +1,9 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import com.google.common.eventbus.EventBus;
+
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 
 /**
  * A command to be sent to the PCR1000.
@@ -23,6 +23,6 @@ public abstract class Command {
 	 * @param serialOutput - The serial output for sending command.
 	 * @param events - EventBus for incoming events from the PCR1000.
 	 */
-	public abstract void execute(OutputStream serialOutput, EventBus events);
-
+	public abstract void execute(CommandHandler commandOutput, EventBus events);
+	
 }

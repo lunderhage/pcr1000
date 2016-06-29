@@ -7,31 +7,30 @@ import com.google.common.eventbus.EventBus;
 import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 
 /**
- * Sets the baud rate to maximum (38400 baud)
+ * Checks power state on the PCR1000.
  */
-public class BaudRate extends Command {
+public class PowerState extends Command {
 	
-	private static final String CMD = "G105\n";
-	
+	private static final String CMD = "H1?\r\n";
+
 	@Override
 	public byte[] encode() {
-		return CMD.getBytes();
+		return null;
 	}
-	
+
+	@Override
 	public String getCommand() {
 		return CMD;
 	}
 
 	@Override
 	public void execute(CommandHandler commandOutput, EventBus events) {
-
 		try {
 			commandOutput.execCommand(CMD);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 	}
-
+	
 }

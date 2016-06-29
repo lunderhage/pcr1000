@@ -1,8 +1,11 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
-import java.io.OutputStream;
+
+import java.io.IOException;
 
 import com.google.common.eventbus.EventBus;
+
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 
 public class FastTransferMode extends Command {
 
@@ -29,8 +32,20 @@ public class FastTransferMode extends Command {
 	}
 
 	@Override
-	public void execute(OutputStream serialOutput, EventBus events) {
-		// TODO Auto-generated method stub
+	public void execute(CommandHandler commandOutput, EventBus events) {
+
+		String cmd = enable == true ? CMD_FAST_TRANSFER_MODE_ENABLE : CMD_FAST_TRANSFER_MODE_DISABLE;
+		
+		try {
+			commandOutput.execCommand(cmd);
+			
+			if (!commandOutput.lastCommandSuccessful()) {
+				throw new RuntimeException("Failed to toggle fast transfer mode (" + enable + ").");
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 

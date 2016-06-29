@@ -1,18 +1,19 @@
 package se.lunderhage.pcr1000.backend.tasks;
 
-import java.io.OutputStream;
+import java.io.IOException;
 
 import com.google.common.eventbus.EventBus;
 
+import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
 import se.lunderhage.pcr1000.backend.types.RadioChannel;
 
 /**
  * Command to tune a RadioChannel on the PCR1000.
  */
 public class Tune extends Command  {
-	
+
 	private static final String TUNE_CMD = "K0%010d%s%s00\n";
-	
+
 	private final RadioChannel channel;
 
 	public Tune(RadioChannel channel) {
@@ -22,12 +23,12 @@ public class Tune extends Command  {
 	public RadioChannel getChannel() {
 		return channel;
 	}
-	
+
 	@Override
 	public byte[] encode() {
 		return getCommand().getBytes();
 	}
-	
+
 	public String getCommand() {
 		return String.format(
 				TUNE_CMD,
@@ -62,9 +63,13 @@ public class Tune extends Command  {
 	}
 
 	@Override
-	public void execute(OutputStream serialOutput, EventBus events) {
-		// TODO Auto-generated method stub
-		
+	public void execute(CommandHandler commandOutput, EventBus events) {
+		try {
+			commandOutput.execCommand(getCommand());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 }
