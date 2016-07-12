@@ -17,23 +17,23 @@ import gnu.io.NRSerialPort;
 import se.lunderhage.pcr1000.backend.subscribers.PrintSubscriber;
 
 public class EventListenerTest {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(EventListenerTest.class);
-	
+
 	private EventBus eventBus;
 	private InputStream serialInput;
-	
+
 	/* TODO: Mock this for the tests. */
 	private NRSerialPort serialPort;
-	
+
 	@Before
 	public void setup() {
 		LOG.debug("Setting up event bus...");
 		eventBus = new EventBus();
 		LOG.debug("Setting up serial port...");
-		serialPort = SerialPortUtils.openSerialPort("/dev/ttyUSB0", PCR1000CommandQueue.INITIAL_BAUDRATE);
+		serialPort = SerialPortUtils.openSerialPort("/dev/ttyUSB0", BaudRate.INITIAL.getBaudRate());
 		LOG.debug("Getting input stream from serial port...");
-		serialInput = serialPort.getInputStream();	
+		serialInput = serialPort.getInputStream();
 	}
 
 	@Test
@@ -41,20 +41,20 @@ public class EventListenerTest {
 		LOG.debug("Creating & Starting event listener...");
 		EventListener eventListener = new EventListener(eventBus, serialInput);
 		serialPort.addEventListener(eventListener);
-		
+
 		PrintSubscriber subscriber = new PrintSubscriber();
-		
+
 		LOG.debug("Subscribing to event bus...");
 		eventBus.register(subscriber);
-		
+
 		LOG.debug("Hit enter to stop.");
 		Scanner scanner = new Scanner(System.in);
 		scanner.nextLine();
 		scanner.close();
-		
+
 		eventBus.unregister(subscriber);
 	}
-	
+
 	@After
 	public void tearDown() throws IOException {
 		LOG.debug("Closing serial port.");
