@@ -11,7 +11,7 @@ import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
  */
 public class FastBaudRate extends Command {
 
-	private static final String CMD = "G105";
+	private static final String CMD = /* "G105" */ "G104"; // Workaround for bug in NRSerialPort on ARM.
 
 	@Override
 	public byte[] encode() {

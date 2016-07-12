@@ -16,6 +16,8 @@ import se.lunderhage.pcr1000.backend.events.RadioTurnedOnEvent;
  */
 public class PowerStateSubscriber {
 	
+	private static final int EVENT_TIMEOUT = 4000;
+	
 	private static final Logger LOG = LoggerFactory.getLogger(PowerStateSubscriber.class);
 	
 	private Boolean turnedOn;
@@ -44,7 +46,7 @@ public class PowerStateSubscriber {
 			LOG.debug("Waiting for event...");
 			// TODO: What is a good timeout on events that are
 			// responses on commands?
-			latch.await(4000, TimeUnit.MILLISECONDS);
+			latch.await(EVENT_TIMEOUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

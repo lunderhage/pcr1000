@@ -77,10 +77,10 @@ public class PCR1000 {
 		pcr1000.register(new PrintSubscriber());
 
 		pcr1000.submitCommand(new Volume(80));
-		pcr1000.submitCommand(new Squelch(147));
-//		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.WFM, Filter._230K, 107100000)));
+		pcr1000.submitCommand(new Squelch(145));
+		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.WFM, Filter._230K, 107100000)));
 //		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   122450000)));
-		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   118100000)));
+//		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   118100000)));
 //		pcr1000.submitCommand(new Tune(new RadioChannel(Mode.AM, Filter._15K,   126650000)));
 
 		LOG.debug("Listening to radio... (press enter to quit)");

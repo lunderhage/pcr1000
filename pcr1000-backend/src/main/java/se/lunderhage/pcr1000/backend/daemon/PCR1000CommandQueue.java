@@ -1,6 +1,7 @@
 package se.lunderhage.pcr1000.backend.daemon;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.TooManyListenersException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -10,6 +11,7 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 
 import gnu.io.NRSerialPort;
@@ -35,34 +37,28 @@ public class PCR1000CommandQueue {
 	private EventBus eventBus = new EventBus();
 	private CommandHandler commandOutput = new CommandHandler(null, eventBus);
 
+	/**
+	 * Finds and starts the PCR1000 if found.
+	 * @return
+	 */
 	public static PCR1000CommandQueue find() {
-
-	    for (String serialPort : SerialPortUtils.getSerialPorts()) {
-	        for (BaudRate baudRate : BaudRate.values()) {
-	            LOG.debug("Trying {}@ {}bps...", serialPort, baudRate.getBaudRate());
-    	        if (SerialPortUtils.testPort(serialPort, baudRate.getBaudRate())) {
-    	            // TODO: Make use of all information we got here in order to
-    	            // speed up the startup of the radio.
-    	            LOG.debug("Found radio on {}@{}bps", serialPort, baudRate.getBaudRate());
-    	            return new PCR1000CommandQueue(serialPort);
-    	        }
-    	        LOG.debug("No response on {}@{}bps.", serialPort, baudRate.getBaudRate());
-	        }
-	    }
-	    throw new IllegalStateException("No (free) PCR1000 was found.");
+		return new PCR1000CommandQueue(SerialPortUtils.getSerialPorts());
 	}
 
+	/**
+	 * Starts the PCR1000 on the specified port.
+	 * @param portName
+	 * @return
+	 */
 	public static PCR1000CommandQueue create(String portName) {
-		return new PCR1000CommandQueue(portName);
+		return new PCR1000CommandQueue(ImmutableList.of(portName));
 	}
 
-	private PCR1000CommandQueue(String portName) {
-		this.portName = portName;
-
+	private PCR1000CommandQueue(List<String> portNames) {
 		if (LOG.isDebugEnabled()) {
 			register(new PrintSubscriber());
 		}
-		init();
+		init(portNames);
 	}
 
 	public Future<?> submitCommand(Command command) {
@@ -79,55 +75,42 @@ public class PCR1000CommandQueue {
 	public boolean isShutdown() {
 		return executor.isShutdown();
 	}
+	
+	private boolean findPCR1000(List<String> serialPortNames) throws TooManyListenersException {
+		PowerStateSubscriber powerStateSubscriber = new PowerStateSubscriber();
+		
+		for (String portName : serialPortNames) {
+			for (BaudRate baudRate : BaudRate.values()) {
+				serialPort = SerialPortUtils.openSerialPort(portName, baudRate.getBaudRate());
+				eventListener = new EventListener(eventBus, serialPort.getInputStream());
+				serialPort.addEventListener(eventListener);
+				commandOutput.setSerialOutput(serialPort.getOutputStream());
+				eventBus.register(powerStateSubscriber);
+				submitCommand(new PowerState());
+	            if (powerStateSubscriber.isTurnedOn() != null) {
+	            	this.portName = portName;
+	            	return true;
+	            }
+	            closeSerialPort();
+			}
+		}
+		throw new IllegalStateException("No (free) PCR1000 was found.");
+	}
 
-	private void init() {
-
-		/*
-		 * TODO:
-		 * Radio might be on or off
-		 * Radio might be in 9600 bps or 38400 bps.
-		 *
-		 * Test if we get response on 9600.
-		 * If yes: switch to 38400.
-		 * If no: Radio might already be in 38400.
-		 *
-		 * Test if we get response on 38400.
-		 * Turn on fast transfer mode.
-		 *
-		 * Done!
-		 */
+	private void init(List<String> serialPortNames) {
 
 		try {
-			serialPort = SerialPortUtils.openSerialPort(portName, BaudRate.INITIAL.getBaudRate());
-			eventListener = new EventListener(eventBus, serialPort.getInputStream());
-			serialPort.addEventListener(eventListener);
-			commandOutput.setSerialOutput(serialPort.getOutputStream());
-
-			// Check power state in 9600.
-			PowerStateSubscriber powerStateSubscriber = new PowerStateSubscriber();
-			eventBus.register(powerStateSubscriber);
-			submitCommand(new PowerState()).get();
-
-			if (powerStateSubscriber.isTurnedOn() != null) {
-				LOG.debug("Got power state response: {} Starting radio...");
-				// Submit initial powerup task
-				submitCommand(new Start());
+			
+			findPCR1000(serialPortNames);
+			
+			if (serialPort.getBaud() == BaudRate.INITIAL.getBaudRate()) {
+				submitCommand(new Start()).get();
 				LOG.debug("Switching to fast baudrate...");
 				submitCommand(new FastBaudRate()).get();
-			} else {
-				LOG.debug("No power state response.");
+				closeSerialPort();
+				serialPort = SerialPortUtils.openSerialPort(portName, BaudRate.FAST.getBaudRate());
 			}
-
-
-			eventBus.unregister(powerStateSubscriber);
-
-			closeSerialPort();
-			serialPort = SerialPortUtils.openSerialPort(portName, BaudRate.FAST.getBaudRate());
-			eventListener = new EventListener(eventBus, serialPort.getInputStream());
-			serialPort.addEventListener(eventListener);
-			commandOutput.setSerialOutput(serialPort.getOutputStream());
-
-			// Submit powerup task and initiate fast transfer mode.
+		
 			LOG.debug("Starting radio in fast baudrate & enabling fast transfer mode...");
 			submitCommand(new Start()).get();
 			submitCommand(new FastTransferMode(true)).get();

@@ -30,8 +30,7 @@ public class CommandHandler {
 	public void execCommand(String command) throws IOException {
 		Preconditions.checkNotNull(serialOutput, "no OutputStream to write commands to.");
 		
-		serialOutput.write(command.getBytes());
-		serialOutput.write(new String("\r\n").getBytes());
+		serialOutput.write((command + "\r\n").getBytes());
 		serialOutput.flush();
 
 	}
