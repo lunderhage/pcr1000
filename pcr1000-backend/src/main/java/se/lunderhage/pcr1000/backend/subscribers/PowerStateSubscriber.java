@@ -15,9 +15,9 @@ import se.lunderhage.pcr1000.backend.events.RadioTurnedOnEvent;
  * Subscribes for power state events.
  */
 public class PowerStateSubscriber {
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(PowerStateSubscriber.class);
-	
+
 	private Boolean turnedOn;
 	private CountDownLatch latch = new CountDownLatch(1);
 
@@ -27,19 +27,19 @@ public class PowerStateSubscriber {
 		turnedOn = true;
 		latch.countDown();
 	}
-	
+
 	@Subscribe
 	public void powerOff(RadioTurnedOffEvent event) {
 		LOG.debug("Got RadioTurnedOffEvent: {}", event);
 		turnedOn = false;
 		latch.countDown();
 	}
-	
+
 	/**
-	 * Returns radio power state or null if no response.
+	 * Returns radio power state.
 	 * @return
 	 */
-	public Boolean isTurnedOn() {
+	public boolean isTurnedOn() {
 		try {
 			LOG.debug("Waiting for event...");
 			// TODO: What is a good timeout on events that are
@@ -49,6 +49,23 @@ public class PowerStateSubscriber {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if (turnedOn == null) {
+		    return false;
+		}
 		return turnedOn;
+	}
+
+	/**
+	 * Returns true if we got (any) respone.
+	 * @return
+	 */
+	public boolean gotResponse() {
+	    try {
+	        latch.await(4000, TimeUnit.MILLISECONDS);
+	    } catch (InterruptedException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	    }
+	    return turnedOn == null ? false : true;
 	}
 }

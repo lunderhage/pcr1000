@@ -62,19 +62,18 @@ public class EventListener implements SerialPortEventListener {
 					default:
 						buffer.put(b);
 					}
-					
+
 					if (!buffer.hasRemaining()) {
 						postEvent(buffer);
 						clearBuffer();
 					}
 				}
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    LOG.error("Error reading from serial port: {}", e);
 			}
 		}
 	}
-	
+
 	private void clearBuffer() {
 		buffer.clear();
 		while (buffer.hasRemaining()) {
@@ -82,7 +81,7 @@ public class EventListener implements SerialPortEventListener {
 		}
 		buffer.clear();
 	}
-	
+
 	private void postEvent(ByteBuffer buffer) {
 		String response = new String(buffer.array()).trim();
 		if (response.isEmpty()) {

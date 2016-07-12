@@ -14,31 +14,32 @@ import gnu.io.SerialPort;
  */
 public class SerialPortUtils {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SerialPortUtils.class);
-	
-	private SerialPortUtils() {}
-	
-	public static NRSerialPort openSerialPort(String portName, int baudrate) {
-		NRSerialPort serialPort = new NRSerialPort(portName, baudrate);
+    private static final Logger LOG = LoggerFactory.getLogger(SerialPortUtils.class);
 
-		LOG.debug("Opening serial port.");
-		serialPort.connect();
-		serialPort.getSerialPortInstance().setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+    private SerialPortUtils() {}
 
-		// To keep radio turned on...
-		serialPort.getSerialPortInstance().setRTS(true);
-		serialPort.getSerialPortInstance().setDTR(true);
+    public static NRSerialPort openSerialPort(String portName, int baudrate) {
+        NRSerialPort serialPort = new NRSerialPort(portName, baudrate);
 
-		return serialPort;
-	}
-	
-	public static List<String> getSerialPorts() {
-		List<String> ports = new ArrayList<>();
-		
-		for (String port : NRSerialPort.getAvailableSerialPorts()) {
-			ports.add(port);
-		}
-		
-		return ports;
-	}
+        LOG.debug("Opening serial port {} @ {}bps ...", portName, baudrate);
+        serialPort.connect();
+        serialPort.getSerialPortInstance().setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
+
+        // To keep radio turned on...
+        serialPort.getSerialPortInstance().setRTS(true);
+        serialPort.getSerialPortInstance().setDTR(true);
+
+        return serialPort;
+    }
+
+    public static List<String> getSerialPorts() {
+        List<String> ports = new ArrayList<>();
+
+        for (String port : NRSerialPort.getAvailableSerialPorts()) {
+            ports.add(port);
+        }
+
+        return ports;
+    }
+
 }
