@@ -75,24 +75,27 @@ public class PCR1000CommandQueue {
 	public boolean isShutdown() {
 		return executor.isShutdown();
 	}
-	
-	private boolean findPCR1000(List<String> serialPortNames) throws TooManyListenersException {
+
+	private boolean findPCR1000(List<String> serialPortNames) throws TooManyListenersException, InterruptedException, ExecutionException {
 		PowerStateSubscriber powerStateSubscriber = new PowerStateSubscriber();
-		
-		for (String portName : serialPortNames) {
-			for (BaudRate baudRate : BaudRate.values()) {
-				serialPort = SerialPortUtils.openSerialPort(portName, baudRate.getBaudRate());
-				eventListener = new EventListener(eventBus, serialPort.getInputStream());
-				serialPort.addEventListener(eventListener);
-				commandOutput.setSerialOutput(serialPort.getOutputStream());
-				eventBus.register(powerStateSubscriber);
-				submitCommand(new PowerState());
-	            if (powerStateSubscriber.isTurnedOn() != null) {
-	            	this.portName = portName;
-	            	return true;
-	            }
-	            closeSerialPort();
-			}
+		eventBus.register(powerStateSubscriber);
+		try {
+		    for (String portName : serialPortNames) {
+		        for (BaudRate baudRate : BaudRate.values()) {
+		            serialPort = SerialPortUtils.openSerialPort(portName, baudRate.getBaudRate());
+		            eventListener = new EventListener(eventBus, serialPort.getInputStream());
+		            serialPort.addEventListener(eventListener);
+		            commandOutput.setSerialOutput(serialPort.getOutputStream());
+		            submitCommand(new PowerState()).get();
+		            if (powerStateSubscriber.isTurnedOn() != null) {
+		                this.portName = portName;
+		                return true;
+		            }
+		            closeSerialPort();
+		        }
+		    }
+		} finally {
+		    eventBus.unregister(powerStateSubscriber);
 		}
 		throw new IllegalStateException("No (free) PCR1000 was found.");
 	}
@@ -100,22 +103,36 @@ public class PCR1000CommandQueue {
 	private void init(List<String> serialPortNames) {
 
 		try {
-			
-			findPCR1000(serialPortNames);
-			
+
+		    findPCR1000(serialPortNames);
+
 			if (serialPort.getBaud() == BaudRate.INITIAL.getBaudRate()) {
 				submitCommand(new Start()).get();
 				LOG.debug("Switching to fast baudrate...");
 				submitCommand(new FastBaudRate()).get();
 				closeSerialPort();
 				serialPort = SerialPortUtils.openSerialPort(portName, BaudRate.FAST.getBaudRate());
+				commandOutput.setSerialOutput(serialPort.getOutputStream());
 			}
-		
-			LOG.debug("Starting radio in fast baudrate & enabling fast transfer mode...");
+
+			LOG.debug("Starting radio in fast baudrate...");
 			submitCommand(new Start()).get();
+			LOG.debug("Enabling fast transfer mode...");
 			submitCommand(new FastTransferMode(true)).get();
 
-			LOG.debug("PCR1000 is ready to receive commands.");
+
+			PowerStateSubscriber powerStateSubscriber = new PowerStateSubscriber();
+			eventBus.register(powerStateSubscriber);
+			LOG.debug("Checking power state...");
+			submitCommand(new PowerState()).get();
+			boolean isTurnedOn = powerStateSubscriber.isTurnedOn();
+			LOG.debug("Turned on? {}", isTurnedOn);
+			eventBus.unregister(powerStateSubscriber);
+			if (isTurnedOn) {
+			    LOG.debug("PCR1000 is ready to receive commands.");
+			} else {
+			    throw new IllegalStateException("Failed to start PCR1000.");
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

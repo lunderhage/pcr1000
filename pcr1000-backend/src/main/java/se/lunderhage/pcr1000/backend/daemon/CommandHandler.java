@@ -17,28 +17,28 @@ public class CommandHandler {
 	private OutputStream serialOutput;
 	private final EventBus eventBus;
 	private final CommandResultSubscriber resultSubscriber = new CommandResultSubscriber();
-	
+
 	public CommandHandler(OutputStream serialOutput, EventBus eventBus) {
 		this.serialOutput = serialOutput;
 		this.eventBus = eventBus;
-		
+
 		if (this.eventBus != null) {
 			eventBus.register(resultSubscriber);
 		}
 	}
-	
+
 	public void execCommand(String command) throws IOException {
 		Preconditions.checkNotNull(serialOutput, "no OutputStream to write commands to.");
-		
+
 		serialOutput.write((command + "\r\n").getBytes());
 		serialOutput.flush();
 
 	}
-	
+
 	public boolean lastCommandSuccessful() {
 		return resultSubscriber.isSuccessful();
 	}
-	
+
 	public void setSerialOutput(OutputStream serialOutput) {
 		Preconditions.checkNotNull(serialOutput);
 		this.serialOutput = serialOutput;

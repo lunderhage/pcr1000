@@ -15,11 +15,11 @@ import se.lunderhage.pcr1000.backend.events.RadioTurnedOnEvent;
  * Subscribes for power state events.
  */
 public class PowerStateSubscriber {
-	
+
 	private static final int EVENT_TIMEOUT = 4000;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(PowerStateSubscriber.class);
-	
+
 	private Boolean turnedOn;
 	private CountDownLatch latch = new CountDownLatch(1);
 
@@ -29,27 +29,30 @@ public class PowerStateSubscriber {
 		turnedOn = true;
 		latch.countDown();
 	}
-	
+
 	@Subscribe
 	public void powerOff(RadioTurnedOffEvent event) {
 		LOG.debug("Got RadioTurnedOffEvent: {}", event);
 		turnedOn = false;
 		latch.countDown();
 	}
-	
+
 	/**
 	 * Returns radio power state or null if no response.
 	 * @return
 	 */
 	public Boolean isTurnedOn() {
 		try {
-			LOG.debug("Waiting for event...");
+			LOG.debug("Waiting for power state event...");
 			// TODO: What is a good timeout on events that are
 			// responses on commands?
 			latch.await(EVENT_TIMEOUT, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    LOG.error("Interrupted. {}", e);
+		}
+		if (turnedOn == null) {
+		    LOG.debug("Timed out waiting for power state.");
+		    return false;
 		}
 		return turnedOn;
 	}

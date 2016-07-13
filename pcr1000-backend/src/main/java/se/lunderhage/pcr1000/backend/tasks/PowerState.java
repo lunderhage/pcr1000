@@ -10,8 +10,8 @@ import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
  * Checks power state on the PCR1000.
  */
 public class PowerState extends Command {
-	
-	private static final String CMD = "H1?\r\n";
+
+	private static final String CMD = "H1?";
 
 	@Override
 	public byte[] encode() {
@@ -32,5 +32,5 @@ public class PowerState extends Command {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
