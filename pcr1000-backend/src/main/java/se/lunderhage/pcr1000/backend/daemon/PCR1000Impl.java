@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.lunderhage.pcr1000.backend.service.PCR1000;
 import se.lunderhage.pcr1000.backend.subscribers.PrintSubscriber;
 import se.lunderhage.pcr1000.backend.tasks.Command;
 import se.lunderhage.pcr1000.backend.tasks.Squelch;
@@ -20,18 +21,18 @@ import se.lunderhage.pcr1000.backend.types.RadioChannel;
 /**
  * This class is the daemon that communicates with the PCR1000
  */
-public class PCR1000 {
+public class PCR1000Impl implements PCR1000 {
 
-	private static final Logger LOG = LoggerFactory.getLogger(PCR1000.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PCR1000Impl.class);
 
 	private String portName;
 	private PCR1000CommandQueue commandQueue = null;
 
-	public PCR1000() {
+	public PCR1000Impl() {
 	    this.portName = null;
 	}
 
-	public PCR1000(String portName) {
+	public PCR1000Impl(String portName) {
 		this.portName = portName;
 	}
 
@@ -71,7 +72,7 @@ public class PCR1000 {
 	}
 
 	public static void main(String[] args) throws InterruptedException, IOException, CommandException, TimeoutException {
-		PCR1000 pcr1000 = new PCR1000();
+		PCR1000Impl pcr1000 = new PCR1000Impl();
 		pcr1000.start();
 
 		pcr1000.register(new PrintSubscriber());

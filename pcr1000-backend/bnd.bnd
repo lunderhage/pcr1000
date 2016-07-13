@@ -1,0 +1,10 @@
+Export-Package: se.lunderhage.pcr1000.backend.service
+Bundle-Version: 1.0.0
+Bundle-Activator: se.lunderhage.pcr1000.backend.service.Activator
+Bundle-Name: PCR1000 Backend
+Bundle-Description: A backend controlling the PCR1000
+Bundle-SymbolicName: se.lunderhage.pcr1000.backend
+-runee: OSGi/Minimum-1.0
+-resolve: auto
+Import-Package: org.osgi.framework,
+ org.slf4j;version=1.7.21
