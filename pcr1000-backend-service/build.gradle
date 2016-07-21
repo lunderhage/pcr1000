@@ -1,0 +1,32 @@
+plugins {
+  id "org.dm.bundle" version "0.8.6"
+}
+
+bundle {
+    // Enable Blueprint support
+    instruction "-plugin", "aQute.lib.spring.SpringXMLType"
+    failOnError = true
+}
+
+apply plugin: "java"
+
+apply plugin: "eclipse"
+apply plugin: "org.dm.bundle"
+
+version = "1"
+
+dependencies {
+    compile project(':pcr1000-backend-model')
+    compile "com.google.guava:guava:19.0"
+    compile "com.neuronrobotics:nrjavaserial:3.11.0"
+    compile "org.slf4j:slf4j-api:1.7.21"
+//    compile "ch.qos.logback:logback-core:1.1.7"
+//    compile "ch.qos.logback:logback-classic:1.1.7"
+    compile "org.osgi:org.osgi.core:4.3.1"
+//    compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
+//    compile "com.fasterxml.jackson.core:jackson-annotations:2.8.1"
+//    compile "com.fasterxml.jackson.core:jackson-core:2.8.1"
+	
+    testCompile 'junit:junit:4.12'
+}
+
