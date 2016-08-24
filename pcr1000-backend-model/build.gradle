@@ -6,6 +6,9 @@ bundle {
     // Enable Blueprint support
     instruction "-plugin", "aQute.lib.spring.SpringXMLType"
     failOnError = true
+    instructions << [
+	'Export-Package': 'se.lunderhage.pcr1000.backend.model.*'
+    ]
 }
 
 apply plugin: "java"
