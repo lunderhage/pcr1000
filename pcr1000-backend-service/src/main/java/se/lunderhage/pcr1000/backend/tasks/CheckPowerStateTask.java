@@ -2,6 +2,9 @@ package se.lunderhage.pcr1000.backend.tasks;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.eventbus.EventBus;
 
 import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
@@ -10,7 +13,9 @@ import se.lunderhage.pcr1000.backend.daemon.CommandHandler;
  * Checks power state on the PCR1000.
  */
 public class CheckPowerStateTask extends Task {
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(CheckPowerStateTask.class);
+
 	private static final String CMD = "H1?\r\n";
 
 	@Override
@@ -28,9 +33,8 @@ public class CheckPowerStateTask extends Task {
 		try {
 			commandOutput.execCommand(CMD);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		    LOG.error("Error executing task.", e);
 		}
 	}
-	
+
 }

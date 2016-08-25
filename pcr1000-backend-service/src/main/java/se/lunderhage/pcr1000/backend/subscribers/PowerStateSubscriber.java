@@ -56,7 +56,7 @@ public class PowerStateSubscriber {
 	}
 
 	/**
-	 * Returns true if we got (any) respone.
+	 * Returns true if we got (any) response.
 	 * @return
 	 */
 	public boolean gotResponse() {

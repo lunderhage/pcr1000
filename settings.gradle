@@ -1,2 +1,2 @@
-include 'pcr1000-backend-model', 'pcr1000-backend-service'
+include 'pcr1000-backend-model', 'pcr1000-backend-service', 'pcr1000-backend-rest'
 

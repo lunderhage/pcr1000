@@ -45,9 +45,9 @@ public class PCR1000Impl implements PCR1000 {
 	 * Turn on and init the PCR1000.
 	 */
 	@Override
-    public synchronized void start() {
+    public synchronized boolean start() {
 	    if (commandQueue != null && !commandQueue.isShutdown()) {
-	        return;
+	        return true;
 	    }
 
 	    if (portName == null) {
@@ -55,16 +55,18 @@ public class PCR1000Impl implements PCR1000 {
 	    } else {
 	        commandQueue = PCR1000CommandQueue.create(portName);
 	    }
+	    return true;
 	}
 
 	/**
 	 * Turn off PCR1000.
 	 */
 	@Override
-    public synchronized void stop() {
+    public synchronized boolean stop() {
 		if (commandQueue != null && !commandQueue.isShutdown()) {
 			commandQueue.shutdown();
 		}
+		return true;
 	}
 
 	/**
@@ -76,32 +78,42 @@ public class PCR1000Impl implements PCR1000 {
 	}
 
     public Future<?> submitCommand(Task command) {
+        if (commandQueue == null) {
+            throw new IllegalArgumentException("Radio is turned off.");
+        }
 		return commandQueue.submitCommand(command);
 	}
 
     @Override
-    public void setVolume(Volume volume) {
+    public boolean setVolume(Volume volume) {
         submitCommand(new VolumeTask(volume));
+        return true;
     }
 
     @Override
-    public void setSquelch(Squelch squelch) {
+    public boolean setSquelch(Squelch squelch) {
         submitCommand(new SquelchTask(squelch));
+        return true;
     }
 
     @Override
-    public void tune(RadioChannel channel) {
+    public boolean tune(RadioChannel channel) {
         submitCommand(new TuneTask(channel));
+        return true;
     }
 
     @Override
     public PowerState getPowerState() {
         if (commandQueue == null) {
+            LOG.debug("We don't have a command queue. That is bad!");
             return new PowerState(false);
         }
+        LOG.debug("We have a command queue. That is good.");
         PowerStateSubscriber subscriber = new PowerStateSubscriber();
         commandQueue.register(subscriber);
+        LOG.debug("Submitting task...");
         submitCommand(new CheckPowerStateTask());
+        LOG.debug("Got response: {}", subscriber.isTurnedOn());
         return new PowerState(subscriber.isTurnedOn());
     }
 

@@ -27,16 +27,16 @@
   ">
     <cxf:bus id="pcr1000RestBus">
     </cxf:bus>
-
-    <bean id="pcr1000Impl" class="se.lunderhage.pcr1000.backend.daemon.PCR1000Impl"/>
     
+    <bean id="pcr1000Bean" class="se.lunderhage.pcr1000.backend.rest.PCR1000Bean"/>        
+
     <jaxrs:server address="/pcr1000" id="pcr1000">
         <jaxrs:serviceBeans>
-            <ref component-id="pcr1000Impl" />
+            <ref component-id="pcr1000Bean" />
         </jaxrs:serviceBeans>
-				<jaxrs:providers>
-    				<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
-				</jaxrs:providers>
+		<jaxrs:providers>
+			<bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+		</jaxrs:providers>
         <jaxrs:features>
             <cxf:logging />
         </jaxrs:features>

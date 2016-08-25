@@ -17,12 +17,12 @@ import com.google.common.eventbus.EventBus;
 import gnu.io.NRSerialPort;
 import se.lunderhage.pcr1000.backend.subscribers.PowerStateSubscriber;
 import se.lunderhage.pcr1000.backend.subscribers.PrintSubscriber;
-import se.lunderhage.pcr1000.backend.tasks.Task;
-import se.lunderhage.pcr1000.backend.tasks.SetFastBaudRate;
-import se.lunderhage.pcr1000.backend.tasks.FastTransferModeTask;
 import se.lunderhage.pcr1000.backend.tasks.CheckPowerStateTask;
+import se.lunderhage.pcr1000.backend.tasks.FastTransferModeTask;
+import se.lunderhage.pcr1000.backend.tasks.SetFastBaudRate;
 import se.lunderhage.pcr1000.backend.tasks.StartTask;
 import se.lunderhage.pcr1000.backend.tasks.StopTask;
+import se.lunderhage.pcr1000.backend.tasks.Task;
 
 public class PCR1000CommandQueue {
 
@@ -169,6 +169,7 @@ public class PCR1000CommandQueue {
 	 * Register subscriber on the event bus.
 	 */
 	public void register(Object subscriber) {
+	    LOG.debug("Registering {} on eventBus.", subscriber.getClass().getName());
 		eventBus.register(subscriber);
 	}
 

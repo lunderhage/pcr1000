@@ -29,10 +29,11 @@ public class TuneTask extends Task  {
 		return getCommand().getBytes();
 	}
 
-	public String getCommand() {
+	@Override
+    public String getCommand() {
 		return String.format(
 				TUNE_CMD,
-				channel.getFrequency().getFrequency(),
+				channel.getFrequency(),
 				channel.getMode().getValue(),
 				channel.getFilter().getValue());
 	}
