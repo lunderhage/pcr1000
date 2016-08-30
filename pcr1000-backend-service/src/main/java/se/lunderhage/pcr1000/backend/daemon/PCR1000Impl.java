@@ -5,6 +5,9 @@ import java.util.Scanner;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ import se.lunderhage.pcr1000.backend.tasks.VolumeTask;
 /**
  * This class is the daemon that communicates with the PCR1000
  */
+@Component(immediate = true, service = PCR1000.class)
 public class PCR1000Impl implements PCR1000 {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PCR1000Impl.class);
@@ -44,29 +48,33 @@ public class PCR1000Impl implements PCR1000 {
 	/**
 	 * Turn on and init the PCR1000.
 	 */
+	@Activate
 	@Override
-    public synchronized boolean start() {
+    public synchronized void start() {
 	    if (commandQueue != null && !commandQueue.isShutdown()) {
-	        return true;
+	        return;
 	    }
 
+	    LOG.debug("Starting PCR1000...");
 	    if (portName == null) {
 	        commandQueue = PCR1000CommandQueue.find();
 	    } else {
 	        commandQueue = PCR1000CommandQueue.create(portName);
 	    }
-	    return true;
+	    LOG.debug("PCR1000 is started.");
 	}
 
 	/**
 	 * Turn off PCR1000.
 	 */
+	@Deactivate
 	@Override
-    public synchronized boolean stop() {
+    public synchronized void stop() {
 		if (commandQueue != null && !commandQueue.isShutdown()) {
+		    LOG.debug("Stopping PCR1000...");
 			commandQueue.shutdown();
+			LOG.debug("PCR1000 is stopped.");
 		}
-		return true;
 	}
 
 	/**

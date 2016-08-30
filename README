@@ -1,0 +1,24 @@
+PCR1000 Backend + Services
+
+Installation:
+
+Download apache karaf (http://karaf.apache.org/download.html).
+Uncompress and start with bin/karaf
+
+Install dependencies:
+
+feature:repo-add cxf-dosgi 1.8.0
+feature:install cxf-dosgi-provider-cxf
+feature:install scr
+feature:install http-whiteboard
+
+(and a whole bunch of more dependencies:
+guava-19.0.jar                 jackson-databind-2.8.1.jar             javax.ws.rs-api-2.0.1.jar    pcr1000-backend-rest-1.jar
+jackson-annotations-2.8.1.jar  jackson-jaxrs-base-2.8.1.jar           nrjavaserial-3.11.0.jar      pcr1000-backend-service-1.jar
+jackson-core-2.8.1.jar         jackson-jaxrs-json-provider-2.8.1.jar  pcr1000-backend-model-1.jar) 
+
+TODO: Find out how to install these via mvn.
+
+When the service is fully deployed:
+Use the rest interface to control the radio. Examples are found in pcr1000-backend-rest/doc.
+

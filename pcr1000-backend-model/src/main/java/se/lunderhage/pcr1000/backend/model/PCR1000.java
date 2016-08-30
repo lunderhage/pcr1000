@@ -10,11 +10,11 @@ public interface PCR1000 {
     /**
      * Turn on and init the PCR1000.
      */
-    public boolean start();
+    public void start();
     /**
      * Turn off PCR1000.
      */
-    public boolean stop();
+    public void stop();
 
     /**
      * Register subscriber on the event bus.

@@ -13,6 +13,7 @@ apply plugin: "java"
 
 apply plugin: "eclipse"
 apply plugin: "org.dm.bundle"
+//apply plugin: "com.github.lburgazzoli.karaf.features"
 
 version = "1"
 

@@ -3,8 +3,7 @@ plugins {
 }
 
 bundle {
-    // Enable Blueprint support
-    instruction "-plugin", "aQute.lib.spring.SpringXMLType"
+    instruction "-dsannotations", "*"
     failOnError = true
 }
 
@@ -24,6 +23,7 @@ dependencies {
     compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
     compile "com.fasterxml.jackson.core:jackson-annotations:2.8.1"
     compile "com.fasterxml.jackson.core:jackson-core:2.8.1"
+    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.1'
 	
     testCompile 'junit:junit:4.12'
 }

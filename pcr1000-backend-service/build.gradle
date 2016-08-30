@@ -3,8 +3,7 @@ plugins {
 }
 
 bundle {
-    instruction "Bundle-Activator", "se.lunderhage.pcr1000.backend.service.Activator"
-    instruction "Main-Class", "se.lunderhage.pcr1000.backend.daemon.PCR1000Impl"
+    instruction "-dsannotations", "*"
     failOnError = true
 }
 
@@ -21,6 +20,7 @@ dependencies {
     compile "com.neuronrobotics:nrjavaserial:3.11.0"
     compile "org.slf4j:slf4j-api:1.7.21"
     compile "org.osgi:org.osgi.core:4.3.1"
+    compile "org.osgi:org.osgi.service.component.annotations:1.3.0"
 	
     testCompile 'junit:junit:4.12'
 }
