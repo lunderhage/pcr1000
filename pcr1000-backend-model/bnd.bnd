@@ -1,0 +1,9 @@
+Export-Package: \
+	se.lunderhage.pcr1000.backend.model.types,\
+	se.lunderhage.pcr1000.backend.model.commands,\
+	se.lunderhage.pcr1000.backend.model
+Bundle-Name: PCR1000 Backend Model
+-resolve: auto
+-runee: JavaSE-1.8
+Bundle-Version: 1.0.0
+Bundle-Description: Interfaces & Types for PCR1000 Backend

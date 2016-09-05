@@ -1,11 +1,25 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+   classpath 'biz.aQute.bnd:biz.aQute.bnd.gradle:3.2.0'
+//    classpath 'biz.aQute.bnd:biz.aQute.bnd:3.2.0'
+//    classpath 'biz.aQute.bnd:biz.aQute.repository:3.2.0'
+  }
+}
+
 apply plugin: "java"
 
 sourceCompatibility = 1.8
 version = "0.1"
 
 subprojects {
-	repositories {
-	    mavenCentral()
-	}
+  apply plugin: 'biz.aQute.bnd'
+
+  repositories {
+     mavenCentral()
+  }
+
 }
 

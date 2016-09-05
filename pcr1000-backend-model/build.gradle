@@ -1,21 +1,26 @@
+/*
 plugins {
   id "org.dm.bundle" version "0.8.6"
 }
+*/
 
+/*
 bundle {
     failOnError = true
-    instructions << [
-	'Export-Package': 'se.lunderhage.pcr1000.backend.model.*'
-    ]
+    instructions << readBndFile("pcr1000-backend-model/bnd.bnd")
 }
+*/
 
 apply plugin: "java"
-
 apply plugin: "eclipse"
-apply plugin: "org.dm.bundle"
-//apply plugin: "com.github.lburgazzoli.karaf.features"
+//apply plugin: "org.dm.bundle"
 
 version = "1"
+
+eclipse.project {
+    buildCommand "bndtools.core.bndbuilder"
+    natures "bndtools.core.bndnature"
+}
 
 dependencies {
     compile "com.google.guava:guava:19.0"

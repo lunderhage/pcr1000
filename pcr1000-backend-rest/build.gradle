@@ -1,18 +1,20 @@
-plugins {
-  id "org.dm.bundle" version "0.8.6"
-}
-
+/*
 bundle {
-    instruction "-dsannotations", "*"
+	instructions << readBndFile("pcr1000-backend-rest/bnd.bnd")
     failOnError = true
 }
+*/
 
 apply plugin: "java"
-
 apply plugin: "eclipse"
-apply plugin: "org.dm.bundle"
+//apply plugin: "org.dm.bundle"
 
 version = "1"
+
+eclipse.project {
+    buildCommand "bndtools.core.bndbuilder"
+    natures "bndtools.core.bndnature"
+}
 
 dependencies {
     compile project(":pcr1000-backend-model")
