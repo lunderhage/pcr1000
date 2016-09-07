@@ -1,13 +1,16 @@
-Export-Package: \
-	se.lunderhage.pcr1000.backend.service,\
-	se.lunderhage.pcr1000.backend.types,\
-	se.lunderhage.pcr1000.backend.commands
 Bundle-Version: 1.0.0
-Bundle-Activator: se.lunderhage.pcr1000.backend.service.Activator
 Bundle-Name: PCR1000 Backend
 Bundle-Description: A backend controlling the PCR1000
-Bundle-SymbolicName: se.lunderhage.pcr1000.backend
 -runee: OSGi/Minimum-1.0
--resolve: auto
-Import-Package: org.osgi.framework,\
- org.slf4j;version=1.7.21
+Import-Package: \
+	org.osgi.framework,\
+	org.slf4j;version=1.7.21
+-dsannotations: *
+-runfw: org.apache.felix.framework;version='[5.4.0,5.4.0]'
+-runrequires: \
+	osgi.identity;filter:='(osgi.identity=pcr1000-backend-model)',\
+	osgi.identity;filter:='(osgi.identity=pcr1000-backend-service)'
+-buildpath: \
+	pcr1000-backend-model;version=latest,\
+	slf4j.api,\
+	com.google.guava
