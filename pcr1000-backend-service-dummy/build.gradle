@@ -17,9 +17,8 @@ version = "1"
 dependencies {
     compile project(":pcr1000-backend-model")
     compile "com.google.guava:guava:$guavaVersion"
-    compile "com.neuronrobotics:nrjavaserial:3.11.0"
 
-    compileOnly "org.slf4j:slf4j-api:$slfVersion"
+    compileOnly "org.slf4j:slf4j-api:1.7.21"
     compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
     compileOnly "org.osgi:org.osgi.service.component.annotations:1.3.0"
 	
