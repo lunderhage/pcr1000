@@ -5,9 +5,6 @@ import java.io.InputStream;
 import java.util.Scanner;
 import java.util.TooManyListenersException;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +23,7 @@ public class EventListenerTest {
 	/* TODO: Mock this for the tests. */
 	private NRSerialPort serialPort;
 
-	@Before
+	//@Before
 	public void setup() {
 		LOG.debug("Setting up event bus...");
 		eventBus = new EventBus();
@@ -36,7 +33,7 @@ public class EventListenerTest {
 		serialInput = serialPort.getInputStream();
 	}
 
-	@Test
+	//@Test
 	public void test() throws InterruptedException, TooManyListenersException {
 		LOG.debug("Creating & Starting event listener...");
 		EventListener eventListener = new EventListener(eventBus, serialInput);
@@ -55,7 +52,7 @@ public class EventListenerTest {
 		eventBus.unregister(subscriber);
 	}
 
-	@After
+	//@After
 	public void tearDown() throws IOException {
 		LOG.debug("Closing serial port.");
 		serialPort.disconnect();

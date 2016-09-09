@@ -16,15 +16,21 @@ version = "1"
 
 dependencies {
     compile project(":pcr1000-backend-model")
-    compile project(":pcr1000-backend-service") // TODO: Make blueprint wait for this service instead.
-    compile "com.google.guava:guava:19.0"
-    compile "org.slf4j:slf4j-api:1.7.21"
-    compile "org.osgi:org.osgi.core:4.3.1"
+    compile "com.google.guava:guava:$guavaVersion"
+
+    compileOnly "org.slf4j:slf4j-api:$slfVersion"
+    compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
     compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
-    compile "com.fasterxml.jackson.core:jackson-annotations:2.8.1"
-    compile "com.fasterxml.jackson.core:jackson-core:2.8.1"
-    compile 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.1'
+    compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+
+    compileOnly "org.osgi:org.osgi.service.component.annotations:1.3.0"
 	
     testCompile 'junit:junit:4.12'
+    
+    //compile "org.apache.cxf.dosgi:cxf-dosgi-ri-multibundle-distribution:1.8.0"
+    //compile "org.apache.cxf.dosgi:cxf-dosgi-multibundle-distribution:2.0.0"
 }
 

@@ -29,7 +29,7 @@ import se.lunderhage.pcr1000.backend.tasks.VolumeTask;
 /**
  * This class is the daemon that communicates with the PCR1000
  */
-@Component(immediate = true, service = PCR1000.class)
+@Component(immediate = false, service = PCR1000.class, property = { "service.ranking:Integer=2" })
 public class PCR1000Impl implements PCR1000 {
 
 	private static final Logger LOG = LoggerFactory.getLogger(PCR1000Impl.class);
