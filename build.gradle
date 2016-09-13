@@ -1,11 +1,90 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.8
-version = "0.1"
-
-subprojects {
-	repositories {
-	    mavenCentral()
-	}
+buildscript {
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath group: 'com.github.lburgazzoli', name: 'gradle-karaf-plugin', version: '0.0.41-SNAPSHOT'
+    }
 }
 
+plugins {
+    id 'maven'
+}
+apply plugin: 'com.github.lburgazzoli.karaf'
+
+version = "0.1"
+
+group "se.lunderhage.pcr1000.backend"
+
+tasks.generateFeatures.dependsOn ':pcr1000-backend-model:assemble', ':pcr1000-backend-service:assemble', ':pcr1000-backend-rest:assemble'
+
+subprojects {
+    apply plugin: "java"
+    sourceCompatibility = 1.8
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+ext {
+    jacksonVersion = "2.8.2"
+    guavaVersion = "19.0"
+    nrjavaSerialVersion = "3.11.0"
+    cxfDosgiVersion = "1.8.0"
+}
+
+configurations {
+    jackson 
+    serial
+    guava
+    pcr1000
+}
+
+dependencies {
+//    jackson "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+//    jackson "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+//    jackson "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+//    jackson "com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:$jacksonVersion"
+//    jackson "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+//    serial "com.neuronrobotics:nrjavaserial:$nrjavaSerialVersion"
+//    guava "com.google.guava:guava:$guavaVersion"
+      pcr1000(project(":pcr1000-backend-model"))
+      pcr1000(project(":pcr1000-backend-service"))
+      pcr1000(project(":pcr1000-backend-rest"))
+}
+
+karaf {
+    features {
+        xsdVersion = "1.3.0"
+        version = "0.0.1"
+        name = "pcr1000-backend-features"
+        description = "PCR1000 Backend required features"
+        includeProject = true
+
+        repository("mvn:org.apache.cxf.dosgi/cxf-dosgi/$cxfDosgiVersion/xml/features")
+        
+        feature {
+            name = "pcr1000-backend-requirements"
+            install = "auto"
+            feature "cxf-dosgi-provider-cxf"
+            feature "scr"
+            feature "http-whiteboard"
+ //           configurations "jackson", "serial", "guava"
+        }
+
+        feature {
+            name = "pcr1000-backend"
+            install = "auto"
+            configurations "pcr1000"
+        }
+
+    }
+
+    kar {
+        archiveName = "pcr1000-backend"
+    }
+}

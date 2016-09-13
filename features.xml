@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" name="pcr1000-backend-features">
+  <repository>mvn:org.apache.cxf.dosgi/cxf-dosgi/1.8.0/xml/features</repository>
+	<feature name="cxf-dosgi-provider-cxf" install="auto"/>
+	<feature name="scr" install="auto"/>
+	<feature name="http-whiteboard" install="auto"/>
+
+	<feature name="misc" install="auto">
+		  <bundle start-level="20">mvn:com.google.guava/guava/19.0</bundle>
+			<bundle start-level="20">wrap:mvn:com.neuronrobotics/nrjavaserial/3.12.1</bundle>
+			<bundle start-level="20">mvn:com.fasterxml.jackson.core/jackson-annotations/2.8.2</bundle> <!-- Find out why needed -->
+			<bundle start-level="20">mvn:com.fasterxml.jackson.core/jackson-core/2.8.2</bundle>
+			<bundle start-level="20">mvn:com.fasterxml.jackson.core/jackson-databind/2.8.2</bundle>
+			<bundle start-level="20">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/2.8.2</bundle>
+			<bundle start-level="20">mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/2.8.2</bundle>
+	</feature>
+
+</features>
