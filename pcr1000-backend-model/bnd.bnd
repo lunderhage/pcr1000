@@ -1,0 +1,5 @@
+Bundle-Version: 1.0.0
+-buildpath: \
+	aQute.bnd.classpath.container;version=latest,\
+	com.fasterxml.jackson.core.jackson-annotations,\
+	com.google.guava

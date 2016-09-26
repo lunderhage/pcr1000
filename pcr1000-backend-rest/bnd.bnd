@@ -1,0 +1,22 @@
+Bundle-Version: 1.0.0
+-dsannotations: *
+src: src/main/java
+
+-buildpath: \
+	osgi.core,\
+	javax.ws.rs-api,\
+	slf4j.api,\
+	com.fasterxml.jackson.jaxrs.jackson-jaxrs-json-provider,\
+	org.osgi.service.component.annotations,\
+	pcr1000-backend-model;version=latest,\
+	com.fasterxml.jackson.core.jackson-core
+Bundle-Name: PCR1000 Backend REST
+Bundle-Description: REST interface for interacting with a PCR1000 Service
+-runfw: org.apache.felix.framework;version='[5.4.0,5.4.0]'
+-runee: JavaSE-1.8
+-resolve: auto
+-runrequires: \
+	osgi.identity;filter:='(osgi.identity=pcr1000-backend-rest)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.command)',\
+	osgi.identity;filter:='(osgi.identity=org.apache.felix.gogo.shell)'
+Export-Package: se.lunderhage.pcr1000.backend.rest

@@ -1,13 +1,19 @@
-Export-Package: \
-	se.lunderhage.pcr1000.backend.service,\
-	se.lunderhage.pcr1000.backend.types,\
-	se.lunderhage.pcr1000.backend.commands
 Bundle-Version: 1.0.0
-Bundle-Activator: se.lunderhage.pcr1000.backend.service.Activator
-Bundle-Name: PCR1000 Backend
-Bundle-Description: A backend controlling the PCR1000
-Bundle-SymbolicName: se.lunderhage.pcr1000.backend
--runee: OSGi/Minimum-1.0
--resolve: auto
-Import-Package: org.osgi.framework,\
- org.slf4j;version=1.7.21
+-dsannotations: *
+src: src/main/java
+-buildpath: \
+	pcr1000-backend-model;version=latest,\
+	com.google.guava,\
+	org.osgi.service.component.annotations,\
+	slf4j.api,\
+	com.neuronrobotics:nrjavaserial
+Import-Package: *
+-runfw: org.apache.felix.framework;version='[5.4.0,5.4.0]'
+-runee: JavaSE-1.8
+-runrequires: osgi.identity;filter:='(osgi.identity=pcr1000-backend-service)'
+Private-Package: \
+	se.lunderhage.pcr1000.backend.model,\
+	se.lunderhage.pcr1000.backend.model.commands,\
+	se.lunderhage.pcr1000.backend.model.types
+Bundle-Name: PCR1000 Backend Service
+Bundle-Description: PCR1000 Backend Implementation
