@@ -22,11 +22,8 @@ dependencies {
     compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
     compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
     compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-    compile "org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.7"
-    compile "org.apache.cxf:cxf-rt-transports-http:3.1.7"
-    compile ("org.apache.cxf:cxf-rt-transports-http-jetty:3.1.7") {
-        exclude module: "slf4j-api"
-    }
+
+    compile "io.dropwizard:dropwizard-core:1.0.2"
 
 
     compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
@@ -36,7 +33,5 @@ dependencies {
 	
     testCompile 'junit:junit:4.12'
     
-    //compile "org.apache.cxf.dosgi:cxf-dosgi-ri-multibundle-distribution:1.8.0"
-    //compile "org.apache.cxf.dosgi:cxf-dosgi-multibundle-distribution:2.0.0"
 }
 

@@ -6,12 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,35 +33,8 @@ public class PCR1000Bean {
     @Reference
     private PCR1000 pcr1000;
 
-    private Server server;
-
     public PCR1000Bean() {
         new JacksonJsonProvider(); // Workaround to have it included in the bundle.
-    }
-
-    @Activate
-    public void activate() {
-
-        /*
-         * TODO: Only activate if there is
-         * no web frontend registered.
-         */
-
-        JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-        sf.setResourceClasses(PCR1000Bean.class);
-        sf.setResourceProvider(PCR1000Bean.class,
-            new SingletonResourceProvider(this));
-        sf.setAddress("http://0.0.0.0:8181/pcr1000");
-        sf.setProvider(new JacksonJsonProvider());
-        server = sf.create();
-    }
-
-    @Deactivate
-    public void deactivate() {
-        if (server != null) {
-            server.stop();
-            server.destroy();
-        }
     }
 
     @POST
