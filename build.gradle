@@ -62,8 +62,8 @@ dependencies {
     felix "org.ops4j.pax.logging:pax-logging-logback:1.8.6"
     felix "org.ops4j.pax.logging:pax-logging-api:1.8.6"
 
-    felix "org.osgi:org.osgi.service.remoteserviceadmin:1.1.0"
-    felix "org.osgi:org.osgi.service.blueprint:1.0.2"
+//    felix "org.osgi:org.osgi.service.remoteserviceadmin:1.1.0"
+//    felix "org.osgi:org.osgi.service.blueprint:1.0.2"
     felix "org.glassfish.jersey.core:jersey-common:2.23.2"
 }
 

@@ -22,12 +22,10 @@ dependencies {
     compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
     compile "javax.ws.rs:javax.ws.rs-api:2.0.1"
     compileOnly "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-    compile "org.apache.cxf:cxf-rt-frontend-jaxrs:3.1.7"
-    compile "org.apache.cxf:cxf-rt-transports-http:3.1.7"
-    compile ("org.apache.cxf:cxf-rt-transports-http-jetty:3.1.7") {
-        exclude module: "slf4j-api"
-    }
 
+    compile 'org.glassfish.jersey.core:jersey-server:2.23.2'
+    compile 'org.glassfish.grizzly:grizzly-http-server:2.3.28'
+    compile 'org.glassfish.jersey.containers:jersey-container-grizzly2-http:2.23.2'
 
     compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"

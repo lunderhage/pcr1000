@@ -6,9 +6,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.cxf.endpoint.Server;
-import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
-import org.apache.cxf.jaxrs.lifecycle.SingletonResourceProvider;
+import java.io.IOException;
+import java.net.URI;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -31,41 +34,41 @@ import se.lunderhage.pcr1000.backend.model.types.RadioChannel;
         "org.apache.cxf.rs.provider=com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"})
 
 @Produces(MediaType.APPLICATION_JSON)
+@Path("/pcr1000")
 public class PCR1000Bean {
 
     private static final Logger LOG = LoggerFactory.getLogger(PCR1000Bean.class);
 
+    private static String BASE_URI = "http://0.0.0.0:8181/";
+
     @Reference
     private PCR1000 pcr1000;
 
-    private Server server;
+    private HttpServer server;
 
     public PCR1000Bean() {
         new JacksonJsonProvider(); // Workaround to have it included in the bundle.
     }
 
     @Activate
-    public void activate() {
+    public void startEmbeddedServer() throws IOException {
 
         /*
          * TODO: Only activate if there is
          * no web frontend registered.
          */
 
-        JAXRSServerFactoryBean sf = new JAXRSServerFactoryBean();
-        sf.setResourceClasses(PCR1000Bean.class);
-        sf.setResourceProvider(PCR1000Bean.class,
-            new SingletonResourceProvider(this));
-        sf.setAddress("http://0.0.0.0:8181/pcr1000");
-        sf.setProvider(new JacksonJsonProvider());
-        server = sf.create();
+        final ResourceConfig rc = new ResourceConfig();
+        rc.register(this);
+        rc.registerInstances(new JacksonJsonProvider());
+        server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+        server.start();
     }
 
     @Deactivate
-    public void deactivate() {
+    public void stopEmbeddedServer() {
         if (server != null) {
-            server.stop();
-            server.destroy();
+            server.shutdownNow();
         }
     }
 
