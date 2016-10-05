@@ -16,6 +16,8 @@ version = "1"
 
 dependencies {
     compile project(":pcr1000-backend-model")
+    compile project(":pcr1000-backend-audio")
+
     compile "com.google.guava:guava:$guavaVersion"
 
     compileOnly "org.slf4j:slf4j-api:$slfVersion"

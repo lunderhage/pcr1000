@@ -1,10 +1,20 @@
 package se.lunderhage.pcr1000.backend.rest;
 
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Pipe;
+import java.nio.channels.Pipe.SourceChannel;
 
 import org.apache.cxf.endpoint.Server;
 import org.apache.cxf.jaxrs.JAXRSServerFactoryBean;
@@ -18,10 +28,13 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import se.lunderhage.pcr1000.backend.audio.AudioStreamer;
 import se.lunderhage.pcr1000.backend.model.PCR1000;
 import se.lunderhage.pcr1000.backend.model.commands.PowerState;
 import se.lunderhage.pcr1000.backend.model.commands.Squelch;
 import se.lunderhage.pcr1000.backend.model.commands.Volume;
+import se.lunderhage.pcr1000.backend.model.types.Filter;
+import se.lunderhage.pcr1000.backend.model.types.Mode;
 import se.lunderhage.pcr1000.backend.model.types.RadioChannel;
 
 @Component(service=PCR1000Bean.class, immediate = true, property={
@@ -37,6 +50,9 @@ public class PCR1000Bean {
 
     @Reference
     private PCR1000 pcr1000;
+
+    @Reference
+    private AudioStreamer streamer;
 
     private Server server;
 
@@ -97,5 +113,90 @@ public class PCR1000Bean {
         return pcr1000.getPowerState();
     }
 
+    /**
+     * Tune with the specified parameters and
+     * listen to radio.
+     * @param channel
+     * @param squelch
+     * @param volume
+     * @return
+     * @throws IOException
+     */
+    @Produces("audio/basic")
+    @GET
+    @Path("/listen")
+    public Response listen(
+            @QueryParam("frequency") String frequency,
+            @QueryParam("mode") String mode,
+            @QueryParam("filter") String filter,
+            @QueryParam("volume") String volume,
+            @QueryParam("squelch") String squelch
+            ) throws IOException {
+
+        try {
+            if (frequency != null && mode != null && filter != null) {
+                RadioChannel channel = new RadioChannel(Mode.valueOf(mode.toUpperCase()),
+                        Filter.valueOf(filter.toUpperCase()),
+                        Integer.parseInt(frequency));
+                pcr1000.tune(channel);
+            }
+
+            if (volume != null) {
+                Volume vol = new Volume(Integer.parseInt(volume));
+                pcr1000.setVolume(vol);
+            }
+
+            if (squelch != null) {
+                Squelch sqlch = new Squelch(Integer.parseInt(squelch));
+                pcr1000.setSquelch(sqlch);
+            }
+        } catch (Exception e) {
+            // TODO: Find out why the message is overwritten.
+            throw new BadRequestException(e.getMessage(), e);
+        }
+
+        return startStream();
+    }
+
+    private Response startStream() throws IOException {
+        final Pipe pipe = streamer.listen();
+
+        StreamingOutput p = new StreamingOutput() {
+
+            @Override
+            public void write(OutputStream output) throws IOException {
+
+                try {
+
+                    SourceChannel srcChannel = pipe.source();
+                    ByteBuffer buffer = ByteBuffer.allocate(4410);
+
+                    while (!Thread.currentThread().isInterrupted()) {
+
+                        int bytes = srcChannel.read(buffer);
+
+                        if (bytes == -1) {
+                            output.close();
+                        }
+
+                        if (bytes > 0) {
+                            srcChannel.read(buffer);
+                            output.write(buffer.array(), 0, buffer.position());
+                            buffer.clear();
+                        }
+                    }
+
+                } catch (IOException e) {
+                    pipe.sink().close();
+                    pipe.source().close();
+                }
+
+            }
+        };
+        LOG.debug("Listening to radio...");
+        return Response.ok(p, MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Type", "audio/x-raw")
+                .build();
+    }
 
 }
