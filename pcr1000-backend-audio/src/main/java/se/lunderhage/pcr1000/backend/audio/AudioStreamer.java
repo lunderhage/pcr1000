@@ -9,7 +9,6 @@ import javax.sound.sampled.TargetDataLine;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.Pipe;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,10 +20,16 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sourceforge.lame.lowlevel.LameEncoder;
+import net.sourceforge.lame.mp3.Lame;
+import net.sourceforge.lame.mp3.MPEGMode;
+
 @Component(immediate = false, service = AudioStreamer.class)
 public class AudioStreamer {
 
     private static final Logger LOG = LoggerFactory.getLogger(AudioStreamer.class);
+
+    private static final int BUFFER_SIZE = getBufferSize(Streamer.AUDIO_FORMAT, 50);
 
     private Streamer streamer;
 
@@ -58,6 +63,10 @@ public class AudioStreamer {
         return streamer.addSubscriber();
     }
 
+    private static int getBufferSize(AudioFormat format, int timeMs) {
+        return (int) format.getSampleRate() / timeMs;
+    }
+
     private static class Streamer implements Runnable {
 
         private static final AudioFormat AUDIO_FORMAT = new AudioFormat(44100f, 16, 1, true, true);
@@ -77,10 +86,12 @@ public class AudioStreamer {
             try (TargetDataLine audioInput = findLine(micInfo)) {
                 audioInput.open(AUDIO_FORMAT);
                 audioInput.start();
-                byte[] audioBytes = new byte[audioInput.getBufferSize() / 10];
+                byte[] audioBytes = new byte[BUFFER_SIZE];
+                byte[] encodedBytes = new byte[BUFFER_SIZE];
                 int numBytes = 0;
-                ByteBuffer streamBuffer = ByteBuffer.allocate(audioInput.getBufferSize() / 10);
+                ByteBuffer streamBuffer = ByteBuffer.allocate(BUFFER_SIZE);
 
+                LameEncoder encoder = new LameEncoder(AUDIO_FORMAT, 64, MPEGMode.MONO, Lame.MEDIUM_FAST, false);
 
                 LOG.debug("Streamer is started. ({})", audioInput);
                 while(running && !Thread.currentThread().isInterrupted()) {
@@ -90,8 +101,11 @@ public class AudioStreamer {
                     /*
                      * TODO: Encode stream to MP3/WMA/OGG Vorbis etc.
                      */
+
+                    int numEncodedBytes = encoder.encodeBuffer(audioBytes, 0, numBytes, encodedBytes);
+
                     streamBuffer.rewind().limit(streamBuffer.capacity());
-                    streamBuffer.put(audioBytes, 0, numBytes).limit(streamBuffer.position());
+                    streamBuffer.put(encodedBytes, 0, numEncodedBytes).limit(streamBuffer.position());
 
                     for (Pipe subscriber : new ArrayList<>(subscribers)) {
                         streamBuffer.rewind();
@@ -150,7 +164,7 @@ public class AudioStreamer {
             /*
              * TODO: We probably need to add some audio header here.
              */
-            subscriber.sink().write(ByteBuffer.wrap(SND_HEADER).order(ByteOrder.BIG_ENDIAN));
+//            subscriber.sink().write(ByteBuffer.wrap(SND_HEADER).order(ByteOrder.BIG_ENDIAN));
             subscribers.add(subscriber);
             LOG.debug("Added subscriber.");
             return subscriber;
