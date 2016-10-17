@@ -17,6 +17,7 @@ version = "1"
 dependencies {
     compile project(":pcr1000-backend-model")
     compile "com.google.guava:guava:$guavaVersion"
+    compile "com.googlecode.soundlibs:tritonus-all:0.3.7.2"
 
     compileOnly "org.slf4j:slf4j-api:$slfVersion"
     compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
