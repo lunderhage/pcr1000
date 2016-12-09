@@ -17,6 +17,8 @@ version = "1"
 dependencies {
     compile project(":pcr1000-backend-model")
     compile "com.google.guava:guava:$guavaVersion"
+    compile "com.googlecode.gstreamer-java:gstreamer-java:1.6"
+    compile "org.daisy.pipeline.modules:audio-encoder-lame:3.0.0"
 
     compileOnly "org.slf4j:slf4j-api:$slfVersion"
     compileOnly "org.osgi:org.osgi.core:$osgiCoreVersion"
@@ -24,5 +26,6 @@ dependencies {
 	
     testCompile "junit:junit:4.12"
     testCompile "org.slf4j:slf4j-api:1.7.21"
+    testCompile "ch.qos.logback:logback-classic:1.1.7"
 }
 

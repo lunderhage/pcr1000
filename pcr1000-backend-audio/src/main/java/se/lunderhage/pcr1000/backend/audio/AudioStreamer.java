@@ -21,6 +21,9 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import se.lunderhage.pcr1000.backend.audio.encoders.AudioEncoder;
+import se.lunderhage.pcr1000.backend.audio.encoders.PlainAudioEncoder;
+
 @Component(immediate = false, service = AudioStreamer.class)
 public class AudioStreamer {
 
@@ -81,6 +84,7 @@ public class AudioStreamer {
                 int numBytes = 0;
                 ByteBuffer streamBuffer = ByteBuffer.allocate(audioInput.getBufferSize() / 10);
 
+                AudioEncoder encoder = new PlainAudioEncoder();
 
                 LOG.debug("Streamer is started. ({})", audioInput);
                 while(running && !Thread.currentThread().isInterrupted()) {
@@ -90,8 +94,7 @@ public class AudioStreamer {
                     /*
                      * TODO: Encode stream to MP3/WMA/OGG Vorbis etc.
                      */
-                    streamBuffer.rewind().limit(streamBuffer.capacity());
-                    streamBuffer.put(audioBytes, 0, numBytes).limit(streamBuffer.position());
+                    encoder.encode(audioBytes, numBytes, streamBuffer);
 
                     for (Pipe subscriber : new ArrayList<>(subscribers)) {
                         streamBuffer.rewind();
